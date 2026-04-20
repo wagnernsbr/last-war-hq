@@ -152,9 +152,30 @@ elif aba == "👤 Membros":
             st.session_state.dados = df
             st.rerun()
 
-# --- ABA: ANÚNCIO ---
+# --- ABA 4: ANÚNCIO (Versão Reforçada) ---
 elif aba == "📢 Anúncio":
     st.header("Anúncio de Guerra")
+    
+    # Tenta ler o arquivo do GitHub, se não existir ou falhar, começa vazio
+    txt_atual = ""
+    if os.path.exists(ARQUIVO_ANUNCIO):
+        try:
+            with open(ARQUIVO_ANUNCIO, "r", encoding="utf-8") as f:
+                txt_atual = f.read()
+        except:
+            txt_atual = "Erro ao ler arquivo. Verifique o GitHub."
+
+    # Campo para ver o anúncio salvo
+    st.subheader("📢 Convocação Atual")
+    if txt_atual:
+        st.code(txt_atual)
+    else:
+        st.info("Nenhum anúncio fixo encontrado no arquivo 'anuncio_alianca.txt' do GitHub.")
+
+    st.divider()
+    
+    # Gerador de Relatório (Aquele que você copia para o jogo)
+    st.subheader("📝 Relatório para Copiar")
     relatorio = "⚔️ **RELATÓRIO TEMPESTADE** ⚔️\n\n"
     for t_nome in ["Time A (18h)", "Time B (09h)"]:
         d_t = df[df['Time'] == t_nome]
@@ -167,8 +188,10 @@ elif aba == "📢 Anúncio":
                     for _, r in sub.iterrows():
                         relatorio += f"{ICONES.get(r['Tropa'], '')} {r['Jogador']} ({r['Poder (M)']}M)\n"
             relatorio += "\n"
+    
     st.code(relatorio)
-    if st.button("🗑️ Resetar Escalação"):
+    
+    if st.button("🗑️ Resetar Escalação Semanal"):
         df['Time'] = "Nenhum"
         df['Status'] = "Nenhum"
         df.to_csv(ARQUIVO_MEMBROS, index=False)
